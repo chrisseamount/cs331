@@ -3,24 +3,7 @@
 -- Started: 2020-02-17
 --
 -- For CS F331 Spring 2020
--- hw#3 Lexer Module
-
--- History:
---   v1. Framework written. Lexer treats every character as punctuation.
---   v2. Add state LETTER, with handler. Write skipWhitespace. Add
---       comment on invariants.
---   v3. Finished (hopefully). Add states DIGIT, DIGDOT, DOT, PLUS,
---       MINUS, STAR.
-
--- Usage:
---
---    program = "print a+b;"  -- program to lex
---    for lexstr, cat in lexit.lex(program) do
---        -- lexstr is the string form of a lexeme.
---        -- cat is a number representing the lexeme category.
---        --  It can be used as an index for array lexit.catnames.
---    end
-
+-- hw#3 Lexer for the Degu language
 
 -- *********************************************************************
 -- Module Table Initialization
@@ -58,6 +41,9 @@ lexit.catnames = {
     "Malformed"
 }
 
+-- keywords
+-- Array of the 15 accepted keywords in Degu. Used in
+-- handle_LETTER.
 local keywords = {
     "and",
     "char",
@@ -76,6 +62,10 @@ local keywords = {
     "while"
 }
 
+-- operators
+-- Array of accepted single character operators. Used in
+-- handle_OPERATOR. '!' is a punctuation but '!=' is an 
+-- operator. handle_OPERATOR handles this.
 local operators = {
     "=",
     "!",
@@ -91,6 +81,8 @@ local operators = {
     "="
 }
 
+-- type
+-- Variable used to hold quote type for String Literals.
 local type = ""
 
 
@@ -225,6 +217,10 @@ function lexit.lex(program)
         return program:sub(pos+1, pos+1)
     end
 
+    -- nextnextChar
+    -- Returns the character at index pos+2 in program. Return value
+    -- is a single-character string, or the empty string if pos+2 is
+    -- past the end.
     local function nextnextChar()
         return program:sub(pos+2, pos+2)
     end
@@ -267,6 +263,9 @@ function lexit.lex(program)
         end
     end
 
+    -- hasValue
+    -- Given table tab and value val and determines if the value
+    -- is in the table.
     local function hasValue(tab, val)
         for k, v in ipairs(tab) do
             if v == val then
