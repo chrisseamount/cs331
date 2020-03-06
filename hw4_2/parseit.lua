@@ -1,3 +1,58 @@
+-- parseit.lua
+-- Christopher Seamount
+-- 2020-03-06
+--
+-- For CS 331 Spring 2020
+-- Parser for Degu language
+-- Requires lexit.lua
+
+
+-- Grammar
+-- Start symbol: expr
+--
+--     expr    ->  term { ("+" | "-") term }
+--     term    ->  factor { ("*" | "/") factor }
+--     factor  ->  ID
+--              |  NUMLIT
+--              |  "(" expr ")"
+
+--     program 	  →   	stmt_list
+--     stmt_list 	  →   	{ statement }
+--     statement 	  →   	‘print’ ‘(’ [ print_arg { ‘,’ print_arg } ] ‘)’
+--     |   	‘func’ ID ‘(’ ‘)’ stmt_list ‘end’
+--     |   	‘if’ expr stmt_list { ‘elif’ expr stmt_list } [ ‘else’ stmt_list ] ‘end’
+--     |   	‘while’ expr stmt_list ‘end’
+--     |   	‘return’ expr
+--     |   	ID ( ‘(’ ‘)’ | [ ‘[’ expr ‘]’ ] ‘=’ expr )
+--     print_arg 	  →   	STRLIT
+--     |   	‘char’ ‘(’ expr ‘)’
+--     |   	expr
+--     expr 	  →   	comp_expr { ( ‘and’ | ‘or’ ) comp_expr }
+--     comp_expr 	  →   	arith_expr { ( ‘==’ | ‘!=’ | ‘<’ | ‘<=’ | ‘>’ | ‘>=’ ) arith_expr }
+--     arith_expr 	  →   	term { ( ‘+’ | ‘-’ ) term }
+--     term 	  →   	factor { ( ‘*’ | ‘/’ | ‘%’ ) factor }
+--     factor 	  →   	‘(’ expr ‘)’
+--     |   	( ‘+’ | ‘-’ | ‘not’ ) factor
+--     |   	NUMLIT
+--     |   	( ‘true’ | ‘false’ )
+--     |   	‘input’ ‘(’ ‘)’
+--     |   	ID [ ‘(’ ‘)’ | ‘[’ expr ‘]’ ]
+--
+-- All operators (+ - * /) are left-associative.
+--
+-- AST Specification
+-- - For an ID, the AST is { SIMPLE_VAR, SS }, where SS is the string
+--   form of the lexeme.
+-- - For a NUMLIT, the AST is { NUMLIT_VAL, SS }, where SS is the string
+--   form of the lexeme.
+-- - For expr -> term, then AST for the expr is the AST for the term,
+--   and similarly for term -> factor.
+-- - Let X, Y be expressions with ASTs XT, YT, respectively.
+--   - The AST for ( X ) is XT.
+--   - The AST for X + Y is { { BIN_OP, "+" }, XT, YT }. For multiple
+--     "+" operators, left-asociativity is reflected in the AST. And
+--     similarly for the other operators.
+
 lexit = require "lexit"
 
 local parseit = {} 
@@ -101,7 +156,12 @@ local function matchCat(c)
 end
 
 
-
+-- parse
+-- Given program, initialize parser and call parsing function for start
+-- symbol. Returns pair of booleans & AST. First boolean indicates
+-- successful parse or not. Second boolean indicates whether the parser
+-- reached the end of the input or not. AST is only valid if first
+-- boolean is true.
 function parseit.parse(prog)
     -- Initialization
     init(prog)
@@ -159,6 +219,7 @@ end
 function parse_statement()
     local good, ast1, ast2, savelex, arrayflag
 
+    -- print statement
     if matchString("print") then
         if not matchString("(") then
             return false, nil
@@ -190,24 +251,32 @@ function parse_statement()
 
         return true, ast2
 
+    -- func statement
     elseif matchString("func") then
 
 
+    -- if statement
     elseif matchString("if") then
 
 
+    -- while statement
     elseif matchString("while") then
 
 
+    -- return statement
     elseif matchString("return") then
 
 
+    -- ID statement
     elseif matchCat(lexit.ID) then
 
     end
 
 end
 
+-- parse_print_arg
+-- Parsing function for nonterminal "print_arg".
+-- Function init must be called before this function is called.
 function parse_print_arg()
     local savelex, good, ast
 
@@ -219,22 +288,37 @@ function parse_print_arg()
     return false, nil
 end
 
+-- parse_expr
+-- Parsing function for nonterminal "expr".
+-- Function init must be called before this function is called.
 function parse_expr()
 
 end
 
+-- parse_comp_expr
+-- Parsing function for nonterminal "comp_expr".
+-- Function init must be called before this function is called.
 function parse_comp_expr()
 
 end
 
+-- parse_arith_exper
+-- Parsing function for nonterminal "arith_expr".
+-- Function init must be called before this function is called.
 function parse_arith_exper()
 
 end
 
+-- parse_term
+-- Parsing function for nonterminal "term".
+-- Function init must be called before this function is called.
 function parse_term()
 
 end
 
+-- parse_factor
+-- Parsing function for nonterminal "factor".
+-- Function init must be called before this function is called.
 function parse_factor()
 
 end
