@@ -121,6 +121,7 @@ function parse_program()
     local good, ast
 
     good, ast = parse_stmt_list()
+    local done = atEnd()
     return good, ast
 end
 
@@ -192,8 +193,51 @@ function parse_statement()
     elseif matchString("func") then
 
 
+    elseif matchString("if") then
+
+
+    elseif matchString("while") then
+
+
+    elseif matchString("return") then
+
+
+    elseif matchCat(lexit.ID) then
+
     end
 
 end
+
+function parse_print_arg()
+    local savelex, good, ast
+
+    savelex = lexstr
+    if matchCat(lexit.STRLIT) then
+        return true, { STRLIT_OUT, savelex }
+    end
+
+    return false, nil
+end
+
+function parse_expr()
+
+end
+
+function parse_comp_expr()
+
+end
+
+function parse_arith_exper()
+
+end
+
+function parse_term()
+
+end
+
+function parse_factor()
+
+end
+
 
 return parseit
