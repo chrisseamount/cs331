@@ -256,7 +256,7 @@ function lexit.lex(program)
             while true do  -- In comment
                 if currChar() == "" or currChar() == "\n" then  -- End of input?
                     drop1()
-                    return
+                    break
                 end
                 drop1()
             end
